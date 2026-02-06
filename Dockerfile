@@ -15,10 +15,13 @@ RUN apt-get update \
 
 ENV PATH="/opt/venv/bin:$PATH"
 
-COPY . /opt/CTFd
+# Copy only requirements first for better caching
+COPY requirements.txt /opt/CTFd/
+RUN pip install --no-cache-dir -r requirements.txt
 
-RUN pip install --no-cache-dir -r requirements.txt \
-    && for d in CTFd/plugins/*; do \
+# Copy plugin requirements and install
+COPY CTFd/plugins /opt/CTFd/CTFd/plugins
+RUN for d in CTFd/plugins/*; do \
         if [ -f "$d/requirements.txt" ]; then \
             pip install --no-cache-dir -r "$d/requirements.txt";\
         fi; \
@@ -36,7 +39,12 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+# Copy the entire application including themes, static files, database, and uploads
 COPY --chown=1001:1001 . /opt/CTFd
+
+# Ensure all frontend assets are present and accessible
+RUN ls -la /opt/CTFd/CTFd/themes/ && \
+    ls -la /opt/CTFd/CTFd/themes/core/static/ || true
 
 RUN useradd \
     --no-log-init \
@@ -50,6 +58,13 @@ RUN useradd \
 COPY --chown=1001:1001 --from=build /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
+# Set environment variables for Railway deployment
+ENV SKIP_DB_PING=false
+ENV DATABASE_URL="sqlite:////opt/CTFd/CTFd/ctfd.db"
+ENV REDIS_URL=""
+ENV REVERSE_PROXY=true
+ENV WORKERS=1
+ENV WORKER_CLASS=gevent
+
 USER 1001
-EXPOSE 8000
 ENTRYPOINT ["/opt/CTFd/docker-entrypoint.sh"]

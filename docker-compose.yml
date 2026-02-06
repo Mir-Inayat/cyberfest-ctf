@@ -17,7 +17,15 @@ services:
     volumes:
       - .data/CTFd/logs:/var/log/CTFd
       - .data/CTFd/uploads:/var/uploads
-      - .:/opt/CTFd:ro
+      # Mount database and uploads directly for persistence
+      - ./CTFd/ctfd.db:/opt/CTFd/CTFd/ctfd.db
+      - ./CTFd/uploads:/opt/CTFd/CTFd/uploads
+      # Mount custom frontend files for live updates
+      - ./CTFd/themes/core/static/css/ddc-custom.dev.css:/opt/CTFd/CTFd/themes/core/static/css/ddc-custom.dev.css:ro
+      - ./CTFd/themes/core/static/js/ddc-particles.dev.js:/opt/CTFd/CTFd/themes/core/static/js/ddc-particles.dev.js:ro
+      - ./CTFd/themes/core/static/img/ddc_logo.jpg:/opt/CTFd/CTFd/themes/core/static/img/ddc_logo.jpg:ro
+      - ./CTFd/themes/core/static/img/ddc-favicon.png:/opt/CTFd/CTFd/themes/core/static/img/ddc-favicon.png:ro
+      - ./CTFd/themes/admin/static/img/favicon.ico:/opt/CTFd/CTFd/themes/admin/static/img/favicon.ico:ro
     depends_on:
       - db
     networks:

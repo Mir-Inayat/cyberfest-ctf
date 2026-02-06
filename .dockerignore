@@ -1,19 +1,48 @@
+# Logs
 CTFd/logs/*.log
-CTFd/static/uploads
-CTFd/uploads
-CTFd/*.db
-CTFd/uploads/**/*
+
+# Secrets
 .ctfd_secret_key
+
+# Development data
 .data
+
+# Git and CI
 .git
-.codecov.yml
-.dockerignore
 .github
 .gitignore
-.prettierignore
+.codecov.yml
 .travis.yml
+
+# IDE
+.dockerignore
+.prettierignore
+.idea
+.vscode
+
+# Dependencies
 **/node_modules
-**/*.pyc
-**/__pycache__
 .venv*
 venv*
+
+# Python cache
+**/*.pyc
+**/__pycache__
+
+# Exclude test and development files
+tests/
+.pytest_cache/
+*.md
+!README.md
+
+# Keep all frontend assets, themes, and static files
+!CTFd/themes/
+!CTFd/themes/**/*
+!CTFd/static/
+!CTFd/static/**/*
+
+# Keep database and uploads for deployment
+!CTFd/ctfd.db
+!CTFd/*.db
+!CTFd/uploads/
+!CTFd/uploads/**/*
